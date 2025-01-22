@@ -37,11 +37,7 @@ wsServer.on("connect", (connection) => {
             )
         );
 
-        const response: Response = {
-            diff,
-        };
-
-        connection.sendUTF(JSON.stringify(response));
+        connection.sendUTF(JSON.stringify({ diff } satisfies Response));
         oldPageContent = newPageContent;
     });
 });
