@@ -1,11 +1,10 @@
 import * as http from "http";
-import { promises as fs } from "fs";
 import { server as WebSocketServer } from "websocket";
 import { assertRestRequest } from "../shared/assert-rest-request";
 import { Response } from "../shared/types";
 import { DiffDOM } from "diff-dom";
 import { getInitialState, update } from "./state";
-const __dirname = import.meta.dirname;
+import { render } from "./view";
 
 // Serve the client static file.
 const httpServer = http.createServer((_request, _response) => {
@@ -29,11 +28,7 @@ wsServer.on("connect", (connection) => {
 
         state = update(state, request);
 
-        let newPageContent =
-            (
-                await fs.readFile(`${__dirname}/../../pages/${state.page}.html`)
-            ).toString("utf8") +
-            `<p>Request Counter: ${state.requestCounter}</p>`;
+        const newPageContent = await render(state);
 
         const diff = JSON.stringify(
             new DiffDOM().diff(
