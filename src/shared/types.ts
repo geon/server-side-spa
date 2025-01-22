@@ -3,7 +3,7 @@ export interface Request {
 }
 
 export interface Response {
-    pageContent: string;
+    diff: string;
 }
 
 export const pages = ["home", "about-us", "faq"] as const;
