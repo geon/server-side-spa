@@ -1,12 +1,12 @@
 import { DiffDOM } from "diff-dom";
 import { assertPage, Page, Request, Response } from "../shared/types";
 
-function getRootElement() {
-    const rootElement = document.querySelector<HTMLDivElement>("#app");
-    if (!rootElement) {
-        throw new Error("No root element.");
+function getAppElement() {
+    const appElement = document.querySelector<HTMLDivElement>("#app");
+    if (!appElement) {
+        throw new Error("No app element.");
     }
-    return rootElement;
+    return appElement;
 }
 
 function getAnchor(url: string) {
@@ -32,7 +32,7 @@ async function loadPage(webSocket: WebSocket, page: Page | undefined) {
 }
 
 function main() {
-    const rootElement = getRootElement();
+    const appElement = getAppElement();
     const webSocket = new WebSocket(
         "ws://" + window.location.hostname + ":3030"
     );
@@ -45,7 +45,7 @@ function main() {
     webSocket.onmessage = function (message) {
         const response: Response = JSON.parse(message.data);
 
-        diffDom.apply(rootElement, JSON.parse(response.diff));
+        diffDom.apply(appElement, JSON.parse(response.diff));
         setUpEventHandlers(webSocket);
     };
 }

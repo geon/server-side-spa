@@ -1,0 +1,12 @@
+#root {
+    transition: 1s background;
+}
+#root.home {
+    background: #ffddcc;
+}
+#root.about-us {
+    background: #ccffdd;
+}
+#root.faq {
+    background: #ddccff;
+}
