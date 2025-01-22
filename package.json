@@ -13,8 +13,10 @@
   "devDependencies": {
     "@types/node": "^22.10.7",
     "@types/websocket": "^1.0.10",
-    "extensionless": "^1.9.9",
     "concurrently": "^9.1.2",
+    "diff-dom": "^5.1.4",
+    "extensionless": "^1.9.9",
+    "jsdom": "^26.0.0",
     "typescript": "~5.6.2",
     "vite": "^6.0.5",
     "websocket": "^1.0.35"

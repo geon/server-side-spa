@@ -27,12 +27,12 @@ wsServer.on("connect", (connection) => {
 
         const request = assertRestRequest(JSON.parse(message.utf8Data));
 
-        const pageContent = await fs.readFile(
+        const pageBuffer = await fs.readFile(
             `${__dirname}/../../pages/${request.page ?? pages[0]}.html`
         );
         const response: Response = {
             pageContent:
-                pageContent.toString("utf8") +
+                pageBuffer.toString("utf8") +
                 `<p>Request Counter: ${requestCounter}</p>`,
         };
 
