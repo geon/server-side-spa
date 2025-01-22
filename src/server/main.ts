@@ -2,8 +2,9 @@ import * as http from "http";
 import { promises as fs } from "fs";
 import { server as WebSocketServer } from "websocket";
 import { assertRestRequest } from "../shared/assert-rest-request";
-import { pages, type Response } from "../shared/types";
+import { Response } from "../shared/types";
 import { DiffDOM } from "diff-dom";
+import { getInitialState, update } from "./state";
 const __dirname = import.meta.dirname;
 
 // Serve the client static file.
@@ -18,23 +19,21 @@ const wsServer = new WebSocketServer({
     autoAcceptConnections: true,
 });
 wsServer.on("connect", (connection) => {
-    let requestCounter = 0;
+    let state = getInitialState();
     let oldPageContent = "";
     connection.on("message", async (message) => {
-        ++requestCounter;
-
         if (message.type !== "utf8") {
             throw new Error("Bad message type.");
         }
-
         const request = assertRestRequest(JSON.parse(message.utf8Data));
+
+        state = update(state, request);
 
         let newPageContent =
             (
-                await fs.readFile(
-                    `${__dirname}/../../pages/${request.page ?? pages[0]}.html`
-                )
-            ).toString("utf8") + `<p>Request Counter: ${requestCounter}</p>`;
+                await fs.readFile(`${__dirname}/../../pages/${state.page}.html`)
+            ).toString("utf8") +
+            `<p>Request Counter: ${state.requestCounter}</p>`;
 
         const diff = JSON.stringify(
             new DiffDOM().diff(
