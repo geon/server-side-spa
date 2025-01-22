@@ -2,9 +2,9 @@ import * as http from "http";
 import { server as WebSocketServer } from "websocket";
 import { assertRestRequest } from "../shared/assert-rest-request";
 import { Response } from "../shared/types";
-import { DiffDOM } from "diff-dom";
 import { getInitialState, update } from "./state";
 import { render } from "./view";
+import { diffPageContent } from "./diff-page-content";
 
 // Serve the client static file.
 const httpServer = http.createServer((_request, _response) => {
@@ -24,20 +24,14 @@ wsServer.on("connect", (connection) => {
         if (message.type !== "utf8") {
             throw new Error("Bad message type.");
         }
-        const request = assertRestRequest(JSON.parse(message.utf8Data));
 
+        const request = assertRestRequest(JSON.parse(message.utf8Data));
         state = update(state, request);
 
         const newPageContent = await render(state);
-
-        const diff = JSON.stringify(
-            new DiffDOM().diff(
-                `<div>${oldPageContent}</div>`,
-                `<div>${newPageContent}</div>`
-            )
-        );
+        const diff = diffPageContent(oldPageContent, newPageContent);
+        oldPageContent = newPageContent;
 
         connection.sendUTF(JSON.stringify({ diff } satisfies Response));
-        oldPageContent = newPageContent;
     });
 });
